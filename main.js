@@ -84,47 +84,64 @@ function init(){
   
   // ciclo l'array di posts e stampo i post
   // ad ogni clico aggiungo il blocco HTML dei post al contenitori
-  posts.forEach( (post) => {
-      container.innerHTML += getTemplatePost(post);
+  posts.forEach( (post, index) => {
+      container.innerHTML += getTemplatePost(post, index);
   })
 }
 
-// genero il template HTML per i post e lo restituisco compilato dei dati dinamici
-function getTemplatePost(post){
-  const {content, media, author, likes, created} = post;
-  console.log(author);
+/*
+  genero il template HTML per i post e lo restituisco compilato dei dati dinamici
+  l'index che passo serve per la funzione di onclick (come se fosse un addEventListener) del pulsante like
+*/ 
+function getTemplatePost(element, index){
+  // destrutturazione dell' oggetto element (mi prendo quello che devo stampare dinamicamente)
+  const {content, media, author, likes, created} = element;
 
-return `
-  <div class="post">
-    <div class="post__header">
-      <div class="post-meta">                    
-        <div class="post-meta__icon">
-          <img class="profile-pic" src="${author.image}" alt="${author.name}">                    
+  // creo variabile che sarà il template litteral dell'immagine del profilo
+  let authorImage = '';
+
+  // se esiste l'immagine la stampo
+  if(author.image) authorImage = `<img class="profile-pic" src="${author.image}" alt="${author.name}">`;
+  // altrimenti con le classi fornite stampo il template di default (ho una funzione che mi genera le iniziali)
+  else authorImage = `
+    <div class="profile-pic-default">
+      <span>${getProfilePicDefault(author)}</span>
+    </div>
+  `;
+  
+  // ritorna il template litteral completo
+  return `
+    <div class="post">
+      <div class="post__header">
+        <div class="post-meta">                    
+          <div class="post-meta__icon">
+            ${authorImage}                 
+          </div>
+          <div class="post-meta__data">
+            <div class="post-meta__author">${author.name}</div>          
+            <div class="post-meta__time">${getDatePost(created)}</div>
+          </div>                    
         </div>
-        <div class="post-meta__data">
-         <div class="post-meta__author">${author.name}</div>          <div class="post-meta__time">${getDatePost(created)}</div>
-        </div>                    
       </div>
+      <div class="post__text">${content}</div>
+     <div class="post__image">
+        <img src="${media}" alt="">
+      </div>
+      <div class="post__footer">
+        <div class="likes js-likes">
+          <div class="likes__cta">
+            <a class="like-button  js-like-button" onclick="handleLikeButton(${index})" href="#" data-postid="1">
+              <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
+              <span class="like-button__label">Mi Piace</span>
+            </a>
+          </div>
+          <div class="likes__counter">
+            Piace a <b id="like-counter-1" class="js-likes-counter">${likes}</b> persone
+          </div>
+        </div> 
+      </div>            
     </div>
-    <div class="post__text">${content}</div>
-    <div class="post__image">
-      <img src="${media}" alt="">
-    </div>
-    <div class="post__footer">
-      <div class="likes js-likes">
-        <div class="likes__cta">
-          <a class="like-button  js-like-button" href="#" data-postid="1">
-            <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
-            <span class="like-button__label">Mi Piace</span>
-          </a>
-        </div>
-        <div class="likes__counter">
-          Piace a <b id="like-counter-1" class="js-likes-counter">${likes}</b> persone
-        </div>
-      </div> 
-    </div>            
-  </div>
-`;
+  `;
 }
 
 /* 
@@ -137,3 +154,27 @@ function getDatePost(dateString) {
   return dateString.split('-').reverse().join('-');
 }
 
+/*
+  funzione che prende il nome dell'autore e prende solo le prime lettere del nome e del cognome
+*/
+function getProfilePicDefault(author) {
+  const nameString = author.name.split(' ')[0][0] + author.name.split(' ')[1][0];
+  return nameString;
+}
+
+// pulsante like 
+function handleLikeButton(index) {
+   // creo html collection che è un array e prendo l'elemento che corrisponde all'indice
+  const likeButton = document.getElementsByClassName('js-like-button')[index];
+  
+
+  if(likeButton.isClick) {
+    likeButton.classList.remove('like-button--liked');
+  }
+  else {
+    likeButton.classList.add('like-button--liked');
+  }
+ 
+  
+  
+}
