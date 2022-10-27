@@ -72,6 +72,8 @@ const posts = [
     }
 ];
 
+let arrayLikeUser = [];
+
 const container = document.getElementById('container');
 
 
@@ -95,7 +97,7 @@ function init(){
 */ 
 function getTemplatePost(element, index){
   // destrutturazione dell' oggetto element (mi prendo quello che devo stampare dinamicamente)
-  const {content, media, author, likes, created} = element;
+  const {content, media, author, likes, created, id} = element;
 
   // creo variabile che sarà il template litteral dell'immagine del profilo
   let authorImage = '';
@@ -130,7 +132,7 @@ function getTemplatePost(element, index){
       <div class="post__footer">
         <div class="likes js-likes">
           <div class="likes__cta">
-            <a class="like-button  js-like-button" onclick="handleLikeButton(${index})" href="#" data-postid="1">
+            <a class="like-button  js-like-button" onclick="handleLikeButton(${index}, ${id})" href="#" data-postid="1">
               <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
               <span class="like-button__label">Mi Piace</span>
             </a>
@@ -163,18 +165,50 @@ function getProfilePicDefault(author) {
 }
 
 // pulsante like 
-function handleLikeButton(index) {
-   // creo html collection che è un array e prendo l'elemento che corrisponde all'indice
+function handleLikeButton(index, id) {
+  // creo html collection che è un array e prendo l'elemento che corrisponde all'indice
   const likeButton = document.getElementsByClassName('js-like-button')[index];
-  
+  // contatore che mi serve per modificare la base dati
+  let counter = 0;
 
-  if(likeButton.isClick) {
+
+  // se l'array dei post con like contiene l'id
+  if(arrayLikeUser.includes(id)) {
+    // rimuovo la classe liked
     likeButton.classList.remove('like-button--liked');
+    // rimuovo l'elemento dall'array usando filter (estraggo solo gli elementi diversi dall' id trovato)
+    arrayLikeUser = arrayLikeUser.filter((element) => element != id);
+    //diminuisco il contatore 
+    counter--; 
   }
+  // se l'array non contiene l'id
   else {
+    // assegno la classe liked
     likeButton.classList.add('like-button--liked');
+    // pusho l'id nell'array
+    arrayLikeUser.push(id);
+    // incremento il contatore 
+    counter++;
   }
- 
   
+  // aggiungo o decremento il numero di like a schermo
+  addLikes(id, counter)
+
+  console.log('array id like post', arrayLikeUser);
   
 }
+
+function addLikes(id, counter) {
+  // filtro l'array dei post con for each e ottengo ogni elemento
+  posts.forEach((element) => {
+    // se la proprietà id dell'elemento è ugaule all'id passato (quindi di volta in volta va a prendere l'elemento cliccato), incremento il contatore (arrivano -1 o +1, quindi += - 1 è come scrivere -=)
+    if(element.id === id) element.likes += counter;
+  })
+
+  
+
+  // ESERCIZIO INCOMPLETO (non sono in grado si stampare i likes aggiornati)
+
+}
+
+
