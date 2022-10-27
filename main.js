@@ -72,4 +72,68 @@ const posts = [
     }
 ];
 
+const container = document.getElementById('container');
+
+
+init();
+
+function init(){
+  
+  // RESET
+  container.innerHTML = '';
+  
+  // ciclo l'array di posts e stampo i post
+  // ad ogni clico aggiungo il blocco HTML dei post al contenitori
+  posts.forEach( (post) => {
+      container.innerHTML += getTemplatePost(post);
+  })
+}
+
+// genero il template HTML per i post e lo restituisco compilato dei dati dinamici
+function getTemplatePost(post){
+  const {content, media, author, likes, created} = post;
+  console.log(author);
+
+return `
+  <div class="post">
+    <div class="post__header">
+      <div class="post-meta">                    
+        <div class="post-meta__icon">
+          <img class="profile-pic" src="${author.image}" alt="${author.name}">                    
+        </div>
+        <div class="post-meta__data">
+         <div class="post-meta__author">${author.name}</div>          <div class="post-meta__time">${getDatePost(created)}</div>
+        </div>                    
+      </div>
+    </div>
+    <div class="post__text">${content}</div>
+    <div class="post__image">
+      <img src="${media}" alt="">
+    </div>
+    <div class="post__footer">
+      <div class="likes js-likes">
+        <div class="likes__cta">
+          <a class="like-button  js-like-button" href="#" data-postid="1">
+            <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
+            <span class="like-button__label">Mi Piace</span>
+          </a>
+        </div>
+        <div class="likes__counter">
+          Piace a <b id="like-counter-1" class="js-likes-counter">${likes}</b> persone
+        </div>
+      </div> 
+    </div>            
+  </div>
+`;
+}
+
+/* 
+  funzione che inverte la data:
+  1 - splitlo la stringa al separatore del otterenere un array di stringhe
+  2 - reverse (inverto) l'array
+  3 join (contario di split) creo una stringa da un array mettendo il separatore      
+*/
+function getDatePost(dateString) {
+  return dateString.split('-').reverse().join('-');
+}
 
